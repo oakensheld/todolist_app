@@ -1,0 +1,21 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Ink / neutrals" subtitle="Cool-slate text & surface scale" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:20px; }
+  .row { display:flex; gap:0; border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); border:1px solid var(--border-subtle); }
+  .sw { flex:1; height:84px; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; box-sizing:border-box; }
+  .n { font-size:11px; font-weight:700; }
+  .h { font-family:var(--font-mono); font-size:10px; opacity:0.8; }
+</style></head>
+<body>
+  <div class="row" id="r"></div>
+  <script>
+    const steps=[['white','#FFFFFF'],[50,'#F7F8FA'],[100,'#EEF0F3'],[200,'#E2E5EA'],[300,'#CDD2DA'],[400,'#9AA1AC'],[500,'#6B7280'],[600,'#4B515B'],[700,'#3A3F47'],[800,'#23272D'],[900,'#14161A']];
+    document.getElementById('r').innerHTML = steps.map(([n,h])=>{
+      const light = (typeof n==='string')|| n<=300; const c = light?'#14161A':'#fff';
+      return `<div class="sw" style="background:${h};color:${c}"><span class="n">${n}</span><span class="h">${h}</span></div>`;
+    }).join('');
+  </script>
+</body></html>

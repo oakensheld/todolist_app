@@ -1,0 +1,18 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Semantic accents" subtitle="Success, warning, danger, info" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:20px; display:flex; gap:12px; }
+  .chip { flex:1; border-radius:var(--radius-lg); padding:14px; box-sizing:border-box; box-shadow:var(--shadow-sm); }
+  .dot { width:20px; height:20px; border-radius:50%; margin-bottom:24px; }
+  .n { font-size:13px; font-weight:700; color:var(--text-strong); }
+  .h { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); }
+</style></head>
+<body id="b">
+  <script>
+    const items=[['Success','#1F8A5B','var(--green-50)'],['Warning','#E8A21C','var(--amber-50)'],['Danger','#E0533D','var(--red-50)'],['Info','#2A6FDB','var(--blue-50)']];
+    document.getElementById('b').innerHTML = items.map(([n,h,bg])=>
+      `<div class="chip" style="background:${bg}"><div class="dot" style="background:${h}"></div><div class="n">${n}</div><div class="h">${h}</div></div>`).join('');
+  </script>
+</body></html>

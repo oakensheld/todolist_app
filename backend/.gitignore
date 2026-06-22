@@ -1,0 +1,5 @@
+node_modules/
+ace.db
+ace.db-journal
+ace.db-wal
+ace.db-shm

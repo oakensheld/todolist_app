@@ -1,0 +1,63 @@
+<!-- @dsCard group="Mobile app" viewport="430x720" name="Today (iOS)" subtitle="Task list, progress, tab bar, add sheet" -->
+<!-- @startingPoint section="Mobile app" subtitle="iOS planner home — tasks, tab bar, add sheet" viewport="430x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ace — iOS</title>
+<link rel="stylesheet" href="../../styles.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; min-height: 100%; }
+  body { font-family: var(--font-sans); background: var(--surface-sunken); color: var(--text-strong); display: flex; align-items: center; justify-content: center; padding: 40px 0; box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="PhoneFrame.jsx"></script>
+<script type="text/babel" src="TabBar.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="CalendarScreen.jsx"></script>
+<script type="text/babel" src="PrepScreen.jsx"></script>
+<script type="text/babel" src="ProfileScreen.jsx"></script>
+<script type="text/babel">
+const SEED = [
+  { id: 1, title: 'Finish problem set 4', cat: 'study', list: 'CS 201', due: '11:00', slot: 'am', done: false },
+  { id: 2, title: 'Review Big-O cheat sheet', cat: 'interview', list: 'Google', due: '1:00', slot: 'pm', done: false },
+  { id: 3, title: 'Email Prof. Ramirez', cat: 'study', list: 'CS 201', due: '9:30', slot: 'am', done: true },
+  { id: 4, title: 'Capstone stand-up', cat: 'project', list: 'Capstone', due: '2:30', slot: 'pm', done: false },
+  { id: 5, title: 'Mock interview practice', cat: 'interview', list: 'Google', due: '4:00', slot: 'pm', done: false },
+];
+
+function App() {
+  const [tasks, setTasks] = React.useState(SEED);
+  const [tab, setTab] = React.useState('today');
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); }, [tab]);
+  const toggle = (id) => setTasks(ts => ts.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const add = (title) => setTasks(ts => [...ts, { id: Date.now(), title, cat: 'study', list: 'CS 201', due: 'today', slot: 'pm', done: false }]);
+
+  const screens = {
+    today: <TodayScreen tasks={tasks} onToggle={toggle} onAdd={add} />,
+    calendar: <CalendarScreen />,
+    prep: <PrepScreen tasks={tasks} onToggle={toggle} />,
+    you: <ProfileScreen />,
+  };
+
+  return (
+    <PhoneFrame>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        {screens[tab] || screens.today}
+        <TabBar tab={tab} onTab={setTab} />
+      </div>
+    </PhoneFrame>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

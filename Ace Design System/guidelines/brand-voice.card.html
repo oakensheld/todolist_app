@@ -1,0 +1,29 @@
+<!-- @dsCard group="Brand" viewport="700x230" name="Voice & tone" subtitle="Encouraging, plain, second-person" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); color:var(--text-strong); padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:16px; }
+  .yes { border-left:3px solid var(--success); }
+  .no { border-left:3px solid var(--ink-300); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; margin:0 0 8px; }
+  .yes .tag { color:var(--success); }
+  .no .tag { color:var(--text-faint); }
+  .ex { font-size:15px; margin:6px 0; }
+  .ex.muted { color:var(--text-faint); text-decoration:line-through; }
+</style></head>
+<body>
+  <div class="card yes">
+    <p class="tag">We say</p>
+    <p class="ex">"Nice — that's everything for today."</p>
+    <p class="ex">"3 tasks left. You've got this."</p>
+    <p class="ex">"Add your first task to get started."</p>
+  </div>
+  <div class="card no">
+    <p class="tag">We avoid</p>
+    <p class="ex muted">"Task creation was successful."</p>
+    <p class="ex muted">"You have failed to complete 3 items!!"</p>
+    <p class="ex muted">"Utilize the input field below."</p>
+  </div>
+</body></html>

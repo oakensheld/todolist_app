@@ -1,0 +1,18 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Spacing scale" subtitle="4px base grid" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:22px; display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
+  .item { display:flex; flex-direction:column; gap:6px; align-items:center; }
+  .bar { background:var(--blue-200); border-radius:var(--radius-xs); }
+  .v { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); }
+  .n { font-size:11px; font-weight:700; color:var(--text-strong); }
+</style></head>
+<body id="b">
+  <script>
+    const s=[['1',4],['2',8],['3',12],['4',16],['5',20],['6',24],['8',32],['10',40],['12',48],['16',64]];
+    document.getElementById('b').innerHTML = s.map(([n,px])=>
+      `<div class="item"><div class="bar" style="width:${px}px;height:${px}px"></div><span class="n">${n}</span><span class="v">${px}</span></div>`).join('');
+  </script>
+</body></html>

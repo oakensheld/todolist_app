@@ -1,0 +1,19 @@
+<!-- @dsCard group="Colors" viewport="700x160" name="Category coding" subtitle="Study, project, interview, personal" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:20px; display:flex; gap:12px; }
+  .chip { flex:1; border-radius:var(--radius-lg); padding:14px; box-sizing:border-box; border:1px solid var(--border-subtle); }
+  .pill { display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:999px; font-size:12px; font-weight:600; margin-bottom:20px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .n { font-size:13px; font-weight:700; color:var(--text-strong); }
+  .h { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); }
+</style></head>
+<body id="b">
+  <script>
+    const items=[['Study','#1A4894','var(--cat-study-bg)','#2A6FDB'],['Project','#6443E6','var(--cat-project-bg)','#7C5CFF'],['Interview','#C2851A','var(--cat-interview-bg)','#E8A21C'],['Personal','#197049','var(--cat-personal-bg)','#1F8A5B']];
+    document.getElementById('b').innerHTML = items.map(([n,fg,bg,solid])=>
+      `<div class="chip"><span class="pill" style="background:${bg};color:${fg}"><span class="dot"></span>${n}</span><div class="n">${n}</div><div class="h">${solid}</div></div>`).join('');
+  </script>
+</body></html>

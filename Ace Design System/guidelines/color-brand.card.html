@@ -1,0 +1,22 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Brand blue" subtitle="Primary scale 50–900" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:20px; }
+  .row { display:flex; gap:0; border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); }
+  .sw { flex:1; height:84px; display:flex; flex-direction:column; justify-content:flex-end; padding:8px; box-sizing:border-box; }
+  .n { font-size:11px; font-weight:700; }
+  .h { font-family:var(--font-mono); font-size:10px; opacity:0.8; }
+</style></head>
+<body>
+  <div class="row" id="r"></div>
+  <script>
+    const steps=[[50,'#EEF4FD'],[100,'#D6E4FA'],[200,'#AECBF4'],[300,'#7FACEC'],[400,'#5189E3'],[500,'#2A6FDB'],[600,'#1F59B8'],[700,'#1A4894'],[800,'#173B76'],[900,'#16325F']];
+    document.getElementById('r').innerHTML = steps.map(([n,h])=>{
+      const light = n<=300; const c = light?'#16325F':'#fff';
+      const star = n===500 ? ' ●' : '';
+      return `<div class="sw" style="background:${h};color:${c}"><span class="n">${n}${star}</span><span class="h">${h}</span></div>`;
+    }).join('');
+  </script>
+</body></html>

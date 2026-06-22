@@ -1,0 +1,113 @@
+<!-- @dsCard group="Components" viewport="700x620" name="Core primitives" subtitle="Buttons, inputs, checkboxes, badges, tabs, progress" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="../../styles.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  body { margin: 0; background: var(--surface-page); font-family: var(--font-sans); color: var(--text-strong); }
+  #root { padding: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .panel { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); }
+  .lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 12px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  [data-lucide] { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Button, IconButton, Checkbox, Input, Badge, Tabs, Switch, ProgressBar, ProgressRing, Avatar } = window.AceDesignSystem_db6642;
+const Ico = ({ n }) => <i data-lucide={n}></i>;
+
+function Demo() {
+  const [tab, setTab] = React.useState('today');
+  const [c1, setC1] = React.useState(true);
+  const [c2, setC2] = React.useState(false);
+  const [sw, setSw] = React.useState(true);
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+  return (
+    <div className="col">
+      <div className="grid">
+        <div className="panel">
+          <p className="lbl">Buttons</p>
+          <div className="col">
+            <div className="row">
+              <Button variant="primary" iconLeft={<Ico n="plus" />}>Add task</Button>
+              <Button variant="secondary">Lists</Button>
+              <Button variant="ghost">Cancel</Button>
+            </div>
+            <div className="row">
+              <Button variant="danger" size="sm">Delete</Button>
+              <Button variant="primary" size="sm" disabled>Saving…</Button>
+              <IconButton label="Search" variant="outline"><Ico n="search" /></IconButton>
+              <IconButton label="Add" variant="filled"><Ico n="plus" /></IconButton>
+            </div>
+          </div>
+        </div>
+        <div className="panel">
+          <p className="lbl">Tasks &amp; toggles</p>
+          <div className="col">
+            <Checkbox checked={c1} onChange={setC1} label="Finish problem set 4" />
+            <Checkbox checked={c2} onChange={setC2} label="Email professor" color="var(--cat-interview)" />
+            <Switch checked={sw} onChange={setSw} label="Daily reminder" />
+          </div>
+        </div>
+      </div>
+      <div className="grid">
+        <div className="panel">
+          <p className="lbl">Inputs</p>
+          <div className="col">
+            <Input iconLeft={<Ico n="search" />} placeholder="Search tasks" />
+            <Input label="List name" placeholder="e.g. CS 201" />
+          </div>
+        </div>
+        <div className="panel">
+          <p className="lbl">Badges</p>
+          <div className="row">
+            <Badge tone="study" dot>Study</Badge>
+            <Badge tone="project" dot>Project</Badge>
+            <Badge tone="interview" dot>Interview</Badge>
+            <Badge tone="success">On track</Badge>
+            <Badge tone="danger">Overdue</Badge>
+            <Badge tone="neutral" size="sm">3</Badge>
+          </div>
+        </div>
+      </div>
+      <div className="grid">
+        <div className="panel">
+          <p className="lbl">Tabs</p>
+          <div className="col">
+            <Tabs value={tab} onChange={setTab} items={[{value:'today',label:'Today',count:5},{value:'upcoming',label:'Upcoming'},{value:'done',label:'Done'}]} />
+            <Tabs variant="pill" value={tab} onChange={setTab} items={['today','upcoming','done'].map(v=>({value:v,label:v[0].toUpperCase()+v.slice(1)}))} />
+          </div>
+        </div>
+        <div className="panel">
+          <p className="lbl">Progress &amp; avatars</p>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <ProgressBar value={7} max={12} showLabel />
+              <div style={{ height: 10 }} />
+              <ProgressBar value={40} color="var(--cat-interview)" height={6} />
+            </div>
+            <ProgressRing value={5} max={8} size={56} />
+            <div className="row" style={{ gap: 0 }}>
+              <Avatar name="Maya Chen" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script>
+</body>
+</html>

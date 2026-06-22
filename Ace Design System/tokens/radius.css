@@ -1,0 +1,11 @@
+/* Ace — Corner radius tokens (medium, friendly-but-professional) */
+
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;   /* default for inputs, buttons */
+  --radius-lg: 12px;  /* cards */
+  --radius-xl: 16px;  /* large surfaces, sheets */
+  --radius-2xl: 24px;
+  --radius-full: 999px; /* pills, avatars */
+}

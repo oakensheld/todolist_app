@@ -1,0 +1,18 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Corner radii" subtitle="xs → full" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-card); padding:22px; display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  .item { display:flex; flex-direction:column; gap:8px; align-items:center; }
+  .box { width:72px; height:60px; background:var(--blue-50); border:1.5px solid var(--blue-300); }
+  .n { font-size:11px; font-weight:700; color:var(--text-strong); }
+  .v { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); }
+</style></head>
+<body id="b">
+  <script>
+    const r=[['xs',4],['sm',6],['md',8],['lg',12],['xl',16],['2xl',24],['full',999]];
+    document.getElementById('b').innerHTML = r.map(([n,px])=>
+      `<div class="item"><div class="box" style="border-radius:${px}px"></div><span class="n">${n}</span><span class="v">${px===999?'pill':px}</span></div>`).join('');
+  </script>
+</body></html>

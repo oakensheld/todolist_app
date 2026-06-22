@@ -1,0 +1,83 @@
+/* Ace — Color tokens
+   Base palette + semantic aliases. Light theme is the default. */
+
+:root {
+  /* ---- Brand blue (primary) ---- */
+  --blue-50:  #EEF4FD;
+  --blue-100: #D6E4FA;
+  --blue-200: #AECBF4;
+  --blue-300: #7FACEC;
+  --blue-400: #5189E3;
+  --blue-500: #2A6FDB; /* primary */
+  --blue-600: #1F59B8;
+  --blue-700: #1A4894;
+  --blue-800: #173B76;
+  --blue-900: #16325F;
+
+  /* ---- Ink / neutrals (slightly cool slate) ---- */
+  --white:    #FFFFFF;
+  --ink-50:   #F7F8FA;
+  --ink-100:  #EEF0F3;
+  --ink-200:  #E2E5EA;
+  --ink-300:  #CDD2DA;
+  --ink-400:  #9AA1AC;
+  --ink-500:  #6B7280;
+  --ink-600:  #4B515B;
+  --ink-700:  #3A3F47;
+  --ink-800:  #23272D;
+  --ink-900:  #14161A;
+
+  /* ---- Semantic accents ---- */
+  --green-50:  #E8F6EF;
+  --green-500: #1F8A5B;
+  --green-600: #197049;
+  --amber-50:  #FDF4E2;
+  --amber-500: #E8A21C;
+  --amber-600: #C2851A;
+  --red-50:    #FCEEEB;
+  --red-500:   #E0533D;
+  --red-600:   #C13F2C;
+  --violet-50: #F1EEFE;
+  --violet-500:#7C5CFF;
+  --violet-600:#6443E6;
+
+  /* ---- Category color-coding (study planner) ---- */
+  --cat-study:     var(--blue-500);
+  --cat-study-bg:  var(--blue-50);
+  --cat-project:   var(--violet-500);
+  --cat-project-bg:var(--violet-50);
+  --cat-interview: var(--amber-500);
+  --cat-interview-bg:var(--amber-50);
+  --cat-personal:  var(--green-500);
+  --cat-personal-bg:var(--green-50);
+
+  /* ---- Semantic aliases ---- */
+  --color-primary:        var(--blue-500);
+  --color-primary-hover:  var(--blue-600);
+  --color-primary-active: var(--blue-700);
+  --color-primary-weak:   var(--blue-50);
+
+  --text-strong:   var(--ink-900);
+  --text-body:     var(--ink-700);
+  --text-muted:    var(--ink-500);
+  --text-faint:    var(--ink-400);
+  --text-on-primary: var(--white);
+  --text-link:     var(--blue-600);
+
+  --surface-page:   var(--ink-50);
+  --surface-card:   var(--white);
+  --surface-sunken: var(--ink-100);
+  --surface-hover:  var(--ink-50);
+
+  --border-subtle: var(--ink-200);
+  --border-default:var(--ink-300);
+  --border-strong: var(--ink-400);
+  --border-focus:  var(--blue-500);
+
+  --success: var(--green-500);
+  --warning: var(--amber-500);
+  --danger:  var(--red-500);
+  --info:    var(--blue-500);
+
+  --focus-ring: 0 0 0 3px rgba(42,111,219,0.30);
+}

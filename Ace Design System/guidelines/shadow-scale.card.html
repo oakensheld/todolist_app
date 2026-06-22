@@ -1,0 +1,17 @@
+<!-- @dsCard group="Spacing" viewport="700x170" name="Elevation" subtitle="Soft cool-tinted shadows" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin:0; font-family:var(--font-sans); background:var(--surface-page); padding:26px; display:flex; gap:26px; align-items:center; flex-wrap:wrap; }
+  .item { display:flex; flex-direction:column; gap:10px; align-items:center; }
+  .box { width:96px; height:62px; background:var(--surface-card); border-radius:var(--radius-lg); border:1px solid var(--border-subtle); }
+  .n { font-size:11px; font-weight:700; color:var(--text-strong); }
+</style></head>
+<body id="b">
+  <script>
+    const sh=[['xs','var(--shadow-xs)'],['sm','var(--shadow-sm)'],['md','var(--shadow-md)'],['lg','var(--shadow-lg)'],['xl','var(--shadow-xl)']];
+    document.getElementById('b').innerHTML = sh.map(([n,v])=>
+      `<div class="item"><div class="box" style="box-shadow:${v}"></div><span class="n">${n}</span></div>`).join('');
+  </script>
+</body></html>
