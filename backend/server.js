@@ -8,11 +8,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'Ace Design System')));
 
-const TODAY_KEY = '2026-06-22';
-const SCHEDULED_BY_DATE = { '2026-06-22': 'today', '2026-06-23': 'tomorrow', '2026-06-25': 'wed', '2026-06-28': 'later' };
+// "Today" tracks the real calendar date in China Standard Time (UTC+8,
+// no DST) rather than a fixed demo date, so the app advances day to day.
+function todayKey() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+}
 
+function addDays(dateKey, delta) {
+  const [y, m, d] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + delta)).toISOString().slice(0, 10);
+}
+
+// Derived from date_key on every read (not stored) so a task's "today"/
+// "tomorrow" tag stays correct as the real date moves forward.
 function scheduledFor(dateKey) {
-  return SCHEDULED_BY_DATE[dateKey] || null;
+  const today = todayKey();
+  if (dateKey === today) return 'today';
+  if (dateKey === addDays(today, 1)) return 'tomorrow';
+  return null;
 }
 
 function rowToTask(row) {
@@ -25,7 +38,7 @@ function rowToTask(row) {
     listId: row.list_id,
     dueTime: row.due_time || '',
     dateKey: row.date_key,
-    scheduled: row.scheduled,
+    scheduled: scheduledFor(row.date_key),
     done: !!row.done,
     overdue: !!row.overdue,
   };
@@ -60,7 +73,7 @@ app.post('/api/tasks', (req, res) => {
   const list = db.prepare('SELECT id FROM lists WHERE id = ?').get(listId);
   if (!list) return res.status(400).json({ error: 'unknown listId' });
 
-  const key = dateKey || TODAY_KEY;
+  const key = dateKey || todayKey();
   const info = db.prepare(`
     INSERT INTO tasks (title, note, list_id, due_time, date_key, scheduled, done, overdue)
     VALUES (?, NULL, ?, ?, ?, ?, 0, 0)

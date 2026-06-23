@@ -5,6 +5,13 @@ function TodayScreen({ tasks, onToggle, onAdd }) {
   const [draft, setDraft] = React.useState('');
   const catColor = { study: 'var(--cat-study)', project: 'var(--cat-project)', interview: 'var(--cat-interview)', personal: 'var(--cat-personal)' };
   const done = tasks.filter(t => t.done).length;
+  const headerDate = (() => {
+    const [y, m, d] = todayKey().split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+    const month = date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+    return `${weekday} · ${month} ${d}`;
+  })();
 
   const groups = [
     { key: 'Morning', items: tasks.filter(t => t.slot === 'am') },
@@ -19,7 +26,7 @@ function TodayScreen({ tasks, onToggle, onAdd }) {
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: '4px 20px 96px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0 16px' }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--cat-study)' }}>Mon · Jun 22</div>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--cat-study)' }}>{headerDate}</div>
             <h1 style={{ margin: '2px 0 0', fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em' }}>Today</h1>
           </div>
           <ProgressRing value={done} max={tasks.length || 1} size={52} />

@@ -40,7 +40,7 @@ function TodayView({ tasks, onToggle, onAdd, filter, onFilter }) {
         <div style={{ padding: '28px 32px 0', maxWidth: 760, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--cat-study)' }}>Monday · Jun 22</div>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--cat-study)' }}>{formatHeaderDate(todayKey())}</div>
               <h1 style={{ margin: '4px 0 0', fontSize: 34, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-strong)' }}>Today's focus</h1>
             </div>
             <div style={{ fontSize: 14, color: 'var(--text-muted)' }}>{done} of {tasks.length} done</div>
@@ -208,8 +208,8 @@ function TaskRow({ task, onToggle, selected, onSelect }) {
 // Extra page views (inlined so file:// works without fetching external .jsx)
 function UpcomingView({ tasks, onToggle }) {
   const { Card } = window.AceDesignSystem_db6642;
-  const TODAY_KEY = '2026-06-22';
-  const SCHEDULED_DATES = { today: TODAY_KEY, tomorrow: '2026-06-23', wed: '2026-06-25', later: '2026-06-28' };
+  const TODAY_KEY = todayKey();
+  const SCHEDULED_DATES = { today: TODAY_KEY, tomorrow: addDaysToKey(TODAY_KEY, 1) };
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const navBtn = {
@@ -218,8 +218,9 @@ function UpcomingView({ tasks, onToggle }) {
     background: 'var(--surface-card)', cursor: 'pointer', color: 'var(--text-body)',
   };
 
-  const [viewYear, setViewYear] = React.useState(2026);
-  const [viewMonth, setViewMonth] = React.useState(5);
+  const [todayYear, todayMonth] = TODAY_KEY.split('-').map(Number);
+  const [viewYear, setViewYear] = React.useState(todayYear);
+  const [viewMonth, setViewMonth] = React.useState(todayMonth - 1);
   const [selectedKey, setSelectedKey] = React.useState(TODAY_KEY);
 
   const dateKey = (y, m, d) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -282,7 +283,7 @@ function UpcomingView({ tasks, onToggle }) {
               <button type="button" onClick={() => shiftMonth(-1)} aria-label="Previous month" style={navBtn}>
                 <i data-lucide="chevron-left" style={{ width: 18, height: 18 }}></i>
               </button>
-              <button type="button" onClick={() => { setViewYear(2026); setViewMonth(5); setSelectedKey(TODAY_KEY); }} style={{ ...navBtn, width: 'auto', padding: '0 10px', fontSize: 13, fontWeight: 600 }}>Today</button>
+              <button type="button" onClick={() => { const key = todayKey(); const [y, m] = key.split('-').map(Number); setViewYear(y); setViewMonth(m - 1); setSelectedKey(key); }} style={{ ...navBtn, width: 'auto', padding: '0 10px', fontSize: 13, fontWeight: 600 }}>Today</button>
               <button type="button" onClick={() => shiftMonth(1)} aria-label="Next month" style={navBtn}>
                 <i data-lucide="chevron-right" style={{ width: 18, height: 18 }}></i>
               </button>
@@ -350,7 +351,7 @@ function AllTasksView({ tasks, onToggle, onAdd, onDelete, lists }) {
   const [filter, setFilter] = React.useState('all');
   const [draft, setDraft] = React.useState('');
   const [listId, setListId] = React.useState('suanfa');
-  const [dueDate, setDueDate] = React.useState('2026-06-22');
+  const [dueDate, setDueDate] = React.useState(todayKey());
   const [dueTime, setDueTime] = React.useState('');
   const [selected, setSelected] = React.useState(() => new Set());
 
@@ -544,22 +545,39 @@ function ListView({ list, tasks, onToggle }) {
   );
 }
 
-const TODAY_KEY = '2026-06-22';
+// "Today" tracks the real calendar date in China Standard Time (UTC+8,
+// no DST) rather than a fixed demo date, so the app advances day to day.
+function todayKey() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+}
+
+function addDaysToKey(dateKey, delta) {
+  const [y, m, d] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + delta)).toISOString().slice(0, 10);
+}
+
+function monthLabel(dateKey, day) {
+  const [y, m] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+}
+
+function formatHeaderDate(dateKey) {
+  const [y, m, d] = dateKey.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+  return `${weekday} · ${monthLabel(dateKey, d)} ${d}`;
+}
+
 // file:// (double-clicked locally) needs an absolute backend URL; served
 // over http(s) (e.g. by this same Express app in production) can just
 // use a same-origin relative path.
 const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : `${location.origin}/api`;
 
 function buildDue(dateKey, dueTime) {
-  if (dateKey === TODAY_KEY) return dueTime || 'today';
+  if (dateKey === todayKey()) return dueTime || 'today';
   const [, , d] = dateKey.split('-').map(Number);
-  const label = `Jun ${d}`;
+  const label = `${monthLabel(dateKey, d)} ${d}`;
   return dueTime ? `${label} · ${dueTime}` : label;
-}
-
-function dateKeyToScheduled(dateKey) {
-  const map = { '2026-06-22': 'today', '2026-06-23': 'tomorrow', '2026-06-25': 'wed', '2026-06-28': 'later' };
-  return map[dateKey] || null;
 }
 
 function decorate(task) {
@@ -661,11 +679,11 @@ function App() {
     const list = lists.find(l => l.id === listId);
     if (!value || !list) return;
     setFilter('open');
-    apiCreateTask({ title: value, listId, dateKey: dateKey || TODAY_KEY, dueTime: dueTime || '' })
+    apiCreateTask({ title: value, listId, dateKey: dateKey || todayKey(), dueTime: dueTime || '' })
       .then((created) => setTasks(ts => [decorate(created), ...ts]))
       .catch((err) => setLoadError(err.message));
   };
-  const add = (title) => addTask({ title, listId: 'suanfa', dateKey: TODAY_KEY, dueTime: '' });
+  const add = (title) => addTask({ title, listId: 'suanfa', dateKey: todayKey(), dueTime: '' });
 
   const removeTasks = (ids) => {
     setTasks(ts => ts.filter(t => !ids.includes(t.id)));
@@ -675,7 +693,7 @@ function App() {
   const handleNavigate = (page, listId) => { setNav(page); setActiveList(listId || null); };
 
   const listsWithCounts = lists.map(l => ({ ...l, open: tasks.filter(t => t.listId === l.id && !t.done).length }));
-  const todayTasks = tasks.filter(t => t.scheduled === 'today' || !t.scheduled);
+  const todayTasks = tasks.filter(t => t.scheduled === 'today');
   const todayOpenCount = todayTasks.filter(t => !t.done).length;
   const currentList = listsWithCounts.find(l => l.id === activeList);
 

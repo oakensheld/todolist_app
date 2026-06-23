@@ -26,16 +26,22 @@
 <script type="text/babel" src="PrepScreen.jsx"></script>
 <script type="text/babel" src="ProfileScreen.jsx"></script>
 <script type="text/babel">
-const TODAY_KEY = '2026-06-22';
+// "Today" tracks the real calendar date in China Standard Time (UTC+8,
+// no DST) rather than a fixed demo date, so the app advances day to day.
+function todayKey() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+}
+
 // file:// (double-clicked locally) needs an absolute backend URL; served
 // over http(s) (e.g. by this same Express app in production) can just
 // use a same-origin relative path.
 const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : `${location.origin}/api`;
 
 function buildDue(dateKey, dueTime) {
-  if (dateKey === TODAY_KEY) return dueTime || 'today';
-  const [, , d] = dateKey.split('-').map(Number);
-  return dueTime ? `Jun ${d} · ${dueTime}` : `Jun ${d}`;
+  if (dateKey === todayKey()) return dueTime || 'today';
+  const [y, m, d] = dateKey.split('-').map(Number);
+  const month = new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+  return dueTime ? `${month} ${d} · ${dueTime}` : `${month} ${d}`;
 }
 
 function slotFor(dueTime) {
@@ -118,7 +124,7 @@ function App() {
   const add = (title) => {
     const value = title.trim();
     if (!value) return;
-    apiCreateTask({ title: value, listId: 'suanfa', dateKey: TODAY_KEY, dueTime: '' })
+    apiCreateTask({ title: value, listId: 'suanfa', dateKey: todayKey(), dueTime: '' })
       .then((created) => setTasks(ts => [decorate(created), ...ts]))
       .catch((err) => setLoadError(err.message));
   };
@@ -141,11 +147,11 @@ function App() {
     );
   }
 
-  const todayTasks = tasks.filter(t => t.scheduled === 'today' || !t.scheduled);
+  const todayTasks = tasks.filter(t => t.scheduled === 'today');
 
   const screens = {
     today: <TodayScreen tasks={todayTasks} onToggle={toggle} onAdd={add} />,
-    calendar: <CalendarScreen />,
+    calendar: <CalendarScreen tasks={tasks} onToggle={toggle} />,
     prep: <PrepScreen tasks={tasks} onToggle={toggle} />,
     you: <ProfileScreen />,
   };
