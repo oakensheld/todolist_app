@@ -26,23 +26,125 @@
 <script type="text/babel" src="PrepScreen.jsx"></script>
 <script type="text/babel" src="ProfileScreen.jsx"></script>
 <script type="text/babel">
-const SEED = [
-  { id: 1, title: 'Finish problem set 4', cat: 'study', list: 'CS 201', due: '11:00', slot: 'am', done: false },
-  { id: 2, title: 'Review Big-O cheat sheet', cat: 'interview', list: 'Google', due: '1:00', slot: 'pm', done: false },
-  { id: 3, title: 'Email Prof. Ramirez', cat: 'study', list: 'CS 201', due: '9:30', slot: 'am', done: true },
-  { id: 4, title: 'Capstone stand-up', cat: 'project', list: 'Capstone', due: '2:30', slot: 'pm', done: false },
-  { id: 5, title: 'Mock interview practice', cat: 'interview', list: 'Google', due: '4:00', slot: 'pm', done: false },
-];
+const TODAY_KEY = '2026-06-22';
+// file:// (double-clicked locally) needs an absolute backend URL; served
+// over http(s) (e.g. by this same Express app in production) can just
+// use a same-origin relative path.
+const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+function buildDue(dateKey, dueTime) {
+  if (dateKey === TODAY_KEY) return dueTime || 'today';
+  const [, , d] = dateKey.split('-').map(Number);
+  return dueTime ? `Jun ${d} · ${dueTime}` : `Jun ${d}`;
+}
+
+function slotFor(dueTime) {
+  const hour = parseInt(dueTime, 10);
+  if (Number.isNaN(hour)) return 'pm';
+  return hour >= 8 && hour <= 11 ? 'am' : 'pm';
+}
+
+function decorate(task) {
+  return { ...task, due: buildDue(task.dateKey, task.dueTime), slot: slotFor(task.dueTime) };
+}
+
+async function apiGetTasks() {
+  const res = await fetch(`${API_BASE}/tasks`);
+  if (!res.ok) throw new Error('Failed to load tasks');
+  return res.json();
+}
+
+async function apiCreateTask(payload) {
+  const res = await fetch(`${API_BASE}/tasks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error('Failed to create task');
+  return res.json();
+}
+
+async function apiSetTaskDone(id, done) {
+  const res = await fetch(`${API_BASE}/tasks/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ done }),
+  });
+  if (!res.ok) throw new Error('Failed to update task');
+  return res.json();
+}
 
 function App() {
-  const [tasks, setTasks] = React.useState(SEED);
+  const [tasks, setTasks] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState(null);
   const [tab, setTab] = React.useState('today');
-  React.useEffect(() => { window.lucide && window.lucide.createIcons(); }, [tab]);
-  const toggle = (id) => setTasks(ts => ts.map(t => t.id === id ? { ...t, done: !t.done } : t));
-  const add = (title) => setTasks(ts => [...ts, { id: Date.now(), title, cat: 'study', list: 'CS 201', due: 'today', slot: 'pm', done: false }]);
+
+  const refresh = React.useCallback((showLoading) => {
+    if (showLoading) setLoading(true);
+    return apiGetTasks()
+      .then((rows) => { setTasks(rows.map(decorate)); setLoadError(null); })
+      .catch((err) => { if (showLoading) setLoadError(err.message); })
+      .finally(() => { if (showLoading) setLoading(false); });
+  }, []);
+
+  // Other devices/tabs only see writes after a refetch — poll and
+  // refetch on focus so this screen picks up changes without a manual reload.
+  React.useEffect(() => {
+    refresh(true);
+    const onFocus = () => refresh(false);
+    const interval = setInterval(() => refresh(false), 5000);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [refresh]);
+
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); }, [tab, tasks, loading]);
+
+  const toggle = (id) => {
+    const target = tasks.find(t => t.id === id);
+    if (!target) return;
+    const nextDone = !target.done;
+    setTasks(ts => ts.map(t => t.id === id ? { ...t, done: nextDone } : t));
+    apiSetTaskDone(id, nextDone).catch(() => {
+      setTasks(ts => ts.map(t => t.id === id ? { ...t, done: !nextDone } : t));
+    });
+  };
+
+  const add = (title) => {
+    const value = title.trim();
+    if (!value) return;
+    apiCreateTask({ title: value, listId: 'suanfa', dateKey: TODAY_KEY, dueTime: '' })
+      .then((created) => setTasks(ts => [decorate(created), ...ts]))
+      .catch((err) => setLoadError(err.message));
+  };
+
+  if (loading) {
+    return (
+      <PhoneFrame>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: 15 }}>Loading…</div>
+      </PhoneFrame>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <PhoneFrame>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontSize: 14, textAlign: 'center', padding: 24 }}>
+          Can't reach the Ace backend at {API_BASE}. Make sure it's running (npm start in backend/). {loadError}
+        </div>
+      </PhoneFrame>
+    );
+  }
+
+  const todayTasks = tasks.filter(t => t.scheduled === 'today' || !t.scheduled);
 
   const screens = {
-    today: <TodayScreen tasks={tasks} onToggle={toggle} onAdd={add} />,
+    today: <TodayScreen tasks={todayTasks} onToggle={toggle} onAdd={add} />,
     calendar: <CalendarScreen />,
     prep: <PrepScreen tasks={tasks} onToggle={toggle} />,
     you: <ProfileScreen />,
