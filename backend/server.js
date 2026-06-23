@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { db } = require('./db');
@@ -5,6 +6,7 @@ const { db } = require('./db');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'Ace Design System')));
 
 const TODAY_KEY = '2026-06-22';
 const SCHEDULED_BY_DATE = { '2026-06-22': 'today', '2026-06-23': 'tomorrow', '2026-06-25': 'wed', '2026-06-28': 'later' };
@@ -33,6 +35,8 @@ const TASK_SELECT = `
   SELECT tasks.*, lists.name AS name, lists.cat AS cat
   FROM tasks JOIN lists ON lists.id = tasks.list_id
 `;
+
+app.get('/', (req, res) => res.redirect('/ui_kits/web/index.html'));
 
 app.get('/api/lists', (req, res) => {
   const rows = db.prepare(`

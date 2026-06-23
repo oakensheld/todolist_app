@@ -545,7 +545,10 @@ function ListView({ list, tasks, onToggle }) {
 }
 
 const TODAY_KEY = '2026-06-22';
-const API_BASE = 'http://localhost:3001/api';
+// file:// (double-clicked locally) needs an absolute backend URL; served
+// over http(s) (e.g. by this same Express app in production) can just
+// use a same-origin relative path.
+const API_BASE = location.protocol === 'file:' ? 'http://localhost:3001/api' : `${location.origin}/api`;
 
 function buildDue(dateKey, dueTime) {
   if (dateKey === TODAY_KEY) return dueTime || 'today';
