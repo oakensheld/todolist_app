@@ -82,7 +82,7 @@ app.patch('/api/tasks/:id', (req, res) => {
 });
 
 app.delete('/api/tasks', (req, res) => {
-  const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+  const ids = req.body && Array.isArray(req.body.ids) ? req.body.ids : [];
   if (ids.length === 0) return res.status(400).json({ error: 'ids array is required' });
 
   const placeholders = ids.map(() => '?').join(',');

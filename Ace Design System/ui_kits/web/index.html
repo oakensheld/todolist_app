@@ -614,15 +614,32 @@ function App() {
   const [nav, setNav] = React.useState('today');
   const [activeList, setActiveList] = React.useState(null);
 
-  React.useEffect(() => {
-    Promise.all([apiGetLists(), apiGetTasks()])
+  const refresh = React.useCallback((showLoading) => {
+    if (showLoading) setLoading(true);
+    return Promise.all([apiGetLists(), apiGetTasks()])
       .then(([listRows, taskRows]) => {
         setLists(listRows);
         setTasks(taskRows.map(decorate));
+        setLoadError(null);
       })
-      .catch((err) => setLoadError(err.message))
-      .finally(() => setLoading(false));
+      .catch((err) => { if (showLoading) setLoadError(err.message); })
+      .finally(() => { if (showLoading) setLoading(false); });
   }, []);
+
+  // Other browsers/tabs only see writes after a refetch — poll and
+  // refetch on focus so they pick up changes without a manual reload.
+  React.useEffect(() => {
+    refresh(true);
+    const onFocus = () => refresh(false);
+    const interval = setInterval(() => refresh(false), 5000);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [refresh]);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); }, [nav, activeList, tasks, filter, loading]);
 
